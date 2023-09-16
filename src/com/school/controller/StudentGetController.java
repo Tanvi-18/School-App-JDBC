@@ -14,8 +14,7 @@ public class StudentGetController {
 		StudentService studentService = new StudentService();
 				
 		studentService.getStudentById(student);
-		
-				
+						
 	}
 
 }

@@ -4,149 +4,141 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
-//import com.mysql.cj.jdbc.JdbcPreparedStatement;
-//import com.mysql.cj.jdbc.ServerPreparedStatement;
 import com.school.configuartion.HelperClass;
-import com.school.dto.Student;
+import com.school.dto.Teacher;
 
-public class StudentDao {
+
+public class TeacherDao {
 	
 	HelperClass helperClass = new HelperClass();
 	Connection connection = null;
 		
-	// to save a student data
-	public Student saveStudent(Student student) {
+	// to save teacher data
+	public void saveMultipleTeachers(List<Teacher> teachers) {
 		
 		connection = helperClass.getConnection();
 		
-		String sql = "INSERT INTO student VALUES(?,?,?)";
+		String sql = "INSERT INTO teacher VALUES(?,?,?)";
 		
+		PreparedStatement preparedstatement = null;
 		
-		
+		for(Teacher t : teachers) {				
 			try {
 				// create statement
-				PreparedStatement preparedstatement = connection.prepareStatement(sql);
+				preparedstatement = connection.prepareStatement(sql);
 				
-				//passed the values to delimiters/placeholder ---> ???
-				preparedstatement.setInt(1, student.getId());
-				preparedstatement.setString(2, student.getName());
-				preparedstatement.setString(3, student.getEmail());
+				preparedstatement.setInt(1, t.getId());
+				preparedstatement.setString(2, t.getName());
+				preparedstatement.setString(3, t.getSubject());
 				
 				//execute
-				preparedstatement.execute();
+				preparedstatement.addBatch();
+				preparedstatement.executeBatch();
 				
 			} 
 			catch (SQLException e) {
 				e.printStackTrace();
 			}
-			finally {
-				try {
-					connection.close();
-				} 
-				catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			
-		return student;
-				
-	}
-	
-	
-	
-	//  to delete a student data
-	public boolean deleteStudentById(int id) {
-		
-		connection = helperClass.getConnection();
-		
-		String sql = "DELETE FROM student WHERE ID=?";
-		
-		int i=0;
-		
-		
-			try {
-				
-				PreparedStatement preparedStatement = connection.prepareStatement(sql);
-				
-				preparedStatement.setInt(1, id);
-				
-				 i = preparedStatement.executeUpdate();
-				
-			} 
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-			finally {
-				try {
-					connection.close();
-				} 
-				catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		
-		if(id>0) {
-			return true;
 		}
-		else {
-			return false;
-		}	
-		
+		try {
+			connection.close();
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
+			
+				
 	
-	
-	
-	// to update a student data
-	public Student updateStudentById(Student student) {
+	//  to delete teacher data
+	public void deleteMultipleTeachers(List<Teacher> teachers) {
 		
 		connection = helperClass.getConnection();
 		
-		String sql = "UPDATE student SET name=? , email=? WHERE ID =?";
+		String sql = "DELETE FROM teacher WHERE ID=?";
 		
+		PreparedStatement preparedstatement = null;
 		
-		
+		for(Teacher t : teachers) {
+			
 			try {
-				PreparedStatement preparedStatement = connection.prepareStatement(sql);
-								
-				preparedStatement.setString(1, student.getName());
-				preparedStatement.setString(2, student.getEmail());
-				preparedStatement.setInt(3, student.getId());
-	
-							
-				int i =preparedStatement.executeUpdate();
+
+				preparedstatement = connection.prepareStatement(sql);
+				
+				preparedstatement.setInt(1, t.getId());
+				
+				preparedstatement.addBatch();
+				preparedstatement.executeBatch();
+			
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			connection.close();
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+					
+			
+	// to update a teacher data
+	public void updateMultipleTeachers(List<Teacher> teachers) {
+		
+		connection = helperClass.getConnection();
+		
+		String sql = "UPDATE teacher SET name=?, subject=? WHERE ID =?";
+		
+		PreparedStatement preparedstatement = null;
+		
+		for(Teacher t : teachers) {	
+			
+			try {
+				// create statement
+				preparedstatement = connection.prepareStatement(sql);
+				
+				preparedstatement.setString(1, t.getName());
+				preparedstatement.setString(2, t.getSubject());
+				preparedstatement.setInt(3, t.getId());
+				
+				//execute
+				preparedstatement.addBatch();
+				preparedstatement.executeBatch();
 				
 			} 
 			catch (SQLException e) {
 				e.printStackTrace();
 			}
-			finally {
-				
-					try {
-						connection.close();
-					} 
-					catch (SQLException e) {
-						e.printStackTrace();
-					}
-			}
-		return student;
+		}
+		try {
+			connection.close();
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
 	
 	// to get data of a student
-	public Student getStudentById(Student student) {
+	public Teacher getTeacherById(Teacher teacher) {
 		
 		connection = helperClass.getConnection();
 
-		String sql = "SELECT * FROM student WHERE ID = ?";
+		String sql = "SELECT * FROM teacher WHERE ID = ?";
 		
 	
 			try {
 				
 				PreparedStatement preparedStatement = connection.prepareStatement(sql);
 				
-				preparedStatement.setInt(1,  student.getId());
+				preparedStatement.setInt(1,  teacher.getId());
 				
 				ResultSet resultSet = preparedStatement.executeQuery();
 				
@@ -170,24 +162,23 @@ public class StudentDao {
 					e.printStackTrace();
 				}
 			}
-			return student;
+		return teacher;
 			
 	}
 	
 	
 	// to get all the records from the student table
-	public Student getAllStudentById(Student student) {
+	public Teacher getAllTeachers(Teacher teacher) {
 		
 		connection = helperClass.getConnection();
 
-		String sql = "SELECT * FROM student";
+		String sql = "SELECT * FROM teacher";
 		
 	
 			try {
 				
 				PreparedStatement preparedStatement = connection.prepareStatement(sql);
 				
-						
 				ResultSet resultSet = preparedStatement.executeQuery();
 				
 				while(resultSet.next()) {
@@ -196,8 +187,7 @@ public class StudentDao {
 					System.out.println(resultSet.getString(3)+" "+"| ");
 					System.out.println("===========================");
 				}		
-				
-				
+								
 			} 
 			catch (SQLException e) {
 				e.printStackTrace();
@@ -211,9 +201,8 @@ public class StudentDao {
 					e.printStackTrace();
 				}
 			}
-			return student;
+		return teacher;
 			
 	}
-	
-		
+
 }
